@@ -3,6 +3,9 @@ package com.example.adapters.controller;
 import com.example.adapters.entity.UserDtoRequest;
 import com.example.adapters.entity.UserDtoResponse;
 import com.example.domain.entity.User;
+import com.example.domain.exception.EmptyParameterException;
+import com.example.domain.exception.InvalidIdException;
+import com.example.domain.exception.UserNotFoundException;
 import com.example.domain.port.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -24,24 +27,28 @@ public class UserController {
         this.modelMapper = modelMapper;
     }
 
-    @PostMapping("")
-    public ResponseEntity post(@RequestBody UserDtoRequest userDtoRequest) {
-        userService.createUser(
-                userDtoRequest.getFirstName(),
-                userDtoRequest.getFirstName(),
-                userDtoRequest.getPhone(),
-                userDtoRequest.getEmail(),
-                userDtoRequest.getPassword(),
-                userDtoRequest.getCar(),
-                userDtoRequest.getTripList(),
-                userDtoRequest.getReservationList(),
-                userDtoRequest.isAdmin(),
-                userDtoRequest.getImageUrl()
-        );
+    @PostMapping("/create")
+    public ResponseEntity post(@RequestBody UserDtoRequest userDtoRequest) throws EmptyParameterException {
+        try {
+                    userService.createUser(
+                    userDtoRequest.getFirstName(),
+                    userDtoRequest.getLastName(),
+                    userDtoRequest.getPhone(),
+                    userDtoRequest.getEmail(),
+                    userDtoRequest.getPassword(),
+                    userDtoRequest.getCar(),
+                    userDtoRequest.getTripList(),
+                    userDtoRequest.getReservationList(),
+                    userDtoRequest.isAdmin(),
+                    userDtoRequest.getImageUrl()
+            );
+        } catch (Exception e ) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body("Utilisateur créé");
     }
 
-    @GetMapping("")
+    @GetMapping("/all")
     public ResponseEntity getAll() {
         List<UserDtoResponse> userDtoResponseList = new ArrayList<>();
         for (User u : userService.findAll()) {
@@ -52,21 +59,35 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getById(@PathVariable int id) {
-        UserDtoResponse userDtoResponse = modelMapper.map(userService.findById(id), UserDtoResponse.class);
-        return ResponseEntity.ok(userDtoResponse);
+    public ResponseEntity getById(@PathVariable int id) throws UserNotFoundException, InvalidIdException {
+        try {
+            UserDtoResponse userDtoResponse = modelMapper.map(userService.findById(id), UserDtoResponse.class);
+            return ResponseEntity.ok(userDtoResponse);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity update(@PathVariable int id, @RequestBody UserDtoRequest userDtoRequest) {
-        User user = modelMapper.map(userDtoRequest, User.class);
-        userService.update(id, user);
-        return ResponseEntity.ok("Utilisateur mis à jour");
+    public ResponseEntity update(@PathVariable int id, @RequestBody UserDtoRequest userDtoRequest) throws UserNotFoundException, InvalidIdException {
+        try {
+            User user = modelMapper.map(userDtoRequest, User.class);
+            userService.update(id, user);
+            return ResponseEntity.ok("Utilisateur mis à jour");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-    public ResponseEntity delete(int id) {
-        userService.delete(id);
-        return ResponseEntity.ok("Utilisateur supprimé");
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable int id) {
+        try {
+            userService.delete(id);
+            return ResponseEntity.ok("Utilisateur supprimé");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+
+        }
     }
 
 }

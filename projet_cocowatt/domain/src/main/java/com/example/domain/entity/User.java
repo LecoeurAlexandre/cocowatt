@@ -18,6 +18,16 @@ public class User {
     public User() {
     }
 
+    public User(String firstName, String lastName, String phone, String email, String password, boolean isAdmin, String imageUrl) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phone = phone;
+        this.email = email;
+        this.password = password;
+        this.isAdmin = isAdmin;
+        this.imageUrl = imageUrl;
+    }
+
     public User(String firstName, String lastName, String phone, String email, String password, Car car, List<Trip> tripList, List<Reservation> reservationList, boolean isAdmin, String imageUrl) {
         this.firstName = firstName;
         this.lastName = lastName;
