@@ -76,6 +76,7 @@ public class UserManagementView extends JDialog {
         String[] columns = new String[] {"Id", "Prénom", "Nom", "Téléphone", "Email", "Admin"};
         DefaultTableModel model = new DefaultTableModel(columns,0);
         table = new JTable(model);
+        // A RENDRE DYNAMIQUE
         List<UserManagementDTO> users = new ArrayList<>();
         users.add(new UserManagementDTO(1, "Alex", "Lecoeur", "06", "alex@gmail.com", true));
         users.add(new UserManagementDTO(2, "Lucas", "Langowski", "0625", "lucas@gmail.com", true));
@@ -111,7 +112,8 @@ public class UserManagementView extends JDialog {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                getSelectedId();
+                int idValue = (int) table.getValueAt(table.getSelectedRow(), 0);
+                // A CONTINUER
             }
         });
         returnPanel.add(deleteButton);
@@ -120,7 +122,5 @@ public class UserManagementView extends JDialog {
         setVisible(true);
         pack();
     }
-    private int getSelectedId() {
 
-    }
 }

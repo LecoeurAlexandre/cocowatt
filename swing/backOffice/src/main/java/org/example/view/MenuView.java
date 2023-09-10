@@ -54,6 +54,15 @@ public class MenuView extends JDialog {
 
         c.gridy = 2;
         moderateButton = new JButton("Modérer les commentaires");
+        moderateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ModerateView moderateView = new ModerateView();
+                moderateView.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                moderateView.setVisible(true);
+                dispose();
+            }
+        });
         buttonsPanel.add(moderateButton, c);
 
         add(buttonsPanel, BorderLayout.CENTER);
