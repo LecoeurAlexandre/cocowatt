@@ -1,11 +1,13 @@
 package com.example.domain.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Trip {
     private int id;
     private String startingPoint;
     private String endPoint;
+    private LocalDateTime startingTime;
     private int availableSeats;
     private int distance;
     private User user;
@@ -13,6 +15,8 @@ public class Trip {
 
     public Trip() {
     }
+
+
 
     public Trip(String startingPoint, String endPoint, int availableSeats, int distance, User user, List<Reservation> reservationList) {
         this.startingPoint = startingPoint;

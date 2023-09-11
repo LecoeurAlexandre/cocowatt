@@ -3,65 +3,100 @@ package com.example.domain.service;
 import com.example.domain.entity.Reservation;
 import com.example.domain.entity.Trip;
 import com.example.domain.entity.User;
+import com.example.domain.exception.InvalidIdException;
+import com.example.domain.exception.InvalidSeatNumberException;
 import com.example.domain.port.TripRepository;
 import com.example.domain.port.TripService;
+import com.example.domain.port.UserRepository;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TripServiceImpl implements TripService {
 
     private TripRepository tripRepository;
+    private UserRepository userRepository;
 
-    public TripServiceImpl(TripRepository tripRepository) {
+    public TripServiceImpl(TripRepository tripRepository, UserRepository userRepository) {
         this.tripRepository = tripRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public void save(String startingPoint, String endPoint, int availableSeats, int distance, User user, List<Reservation> reservationList) {
-        if (startingPoint.isEmpty() || endPoint.isEmpty() || availableSeats <= 0 || user.equals(null)) {
+    public void create(String startingPoint, String endPoint, String startingTime, int availableSeats, int distance, int userId) throws InvalidIdException, InvalidSeatNumberException {
+        if (startingPoint.isEmpty() || endPoint.isEmpty() || distance <= 0) {
             throw new RuntimeException("Paramètre(s) invalide(s)");
         }
-        Trip trip = new Trip(startingPoint, endPoint, availableSeats, distance, user, reservationList);
-        tripRepository.save(trip);
+        if (availableSeats <= 0) {
+            throw new InvalidSeatNumberException();
+        }
+        if (userId <= 0) {
+            throw new InvalidIdException(userId);
+        }
+        try {
+            User user = userRepository.findById(userId);
+            List<Reservation> reservationList = new ArrayList<>();
+            Trip trip = new Trip(startingPoint, endPoint, availableSeats, distance, user, reservationList);
+            tripRepository.save(trip);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
-    public Trip findById(int id) {
+    public Trip findById(int id) throws InvalidIdException {
         if (id <= 0) {
-            throw new RuntimeException("ID invalide");
+            throw new InvalidIdException(id);
         }
-        Trip trip = tripRepository.findById(id);
-        return trip;
+        try {
+            Trip trip = tripRepository.findById(id);
+            return trip;
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
     public List<Trip> findAll() {
-        return tripRepository.findAll();
+        try {
+            return tripRepository.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
-    public void delete(int id) {
-        Trip trip = tripRepository.findById(id);
-        if (id <= 0 || trip.equals(null)) {
-            throw new RuntimeException("Trajet introuvable");
+    public void delete(int id) throws InvalidIdException {
+        if (id <= 0) {
+            throw new InvalidIdException(id);
         }
-        tripRepository.delete(trip);
+        try {
+            Trip trip = tripRepository.findById(id);
+            tripRepository.delete(trip);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
-    public void update(int id, Trip trip) {
-        if (id <= 0 || trip.equals(null)) {
-            throw new RuntimeException("Trajet introuvable");
+    public void update(int id, Trip trip) throws InvalidIdException {
+        if (id <= 0) {
+            throw new InvalidIdException(id);
         }
-        Trip tripToUpdate = tripRepository.findById(id);
+        try {
+            Trip tripToUpdate = tripRepository.findById(id);
 
-        tripToUpdate.setStartingPoint(trip.getStartingPoint());
-        tripToUpdate.setEndPoint(trip.getEndPoint());
-        tripToUpdate.setAvailableSeats(trip.getAvailableSeats());
-        tripToUpdate.setDistance(trip.getDistance());
-        tripToUpdate.setUser(trip.getUser());
-        tripToUpdate.setReservationList(trip.getReservationList());
+            tripToUpdate.setStartingPoint(trip.getStartingPoint());
+            tripToUpdate.setEndPoint(trip.getEndPoint());
+            tripToUpdate.setAvailableSeats(trip.getAvailableSeats());
+            tripToUpdate.setDistance(trip.getDistance());
+            tripToUpdate.setUser(trip.getUser());
+            tripToUpdate.setReservationList(trip.getReservationList());
 
-        tripRepository.save(tripToUpdate);
+            tripRepository.save(tripToUpdate);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }

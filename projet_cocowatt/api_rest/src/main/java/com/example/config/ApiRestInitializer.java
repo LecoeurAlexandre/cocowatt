@@ -24,7 +24,7 @@ public class ApiRestInitializer implements ApplicationContextInitializer {
         ConfigurableListableBeanFactory registry = applicationContext.getBeanFactory();
         registry.registerSingleton("CarService", new CarServiceImpl(infraContext.getBean(CarRepositoryImpl.class),infraContext.getBean(UserRepositoryImpl.class)));
         registry.registerSingleton("UserService", new UserServiceImpl(infraContext.getBean(UserRepositoryImpl.class)));
-        registry.registerSingleton("TripService", new TripServiceImpl(infraContext.getBean(TripRepositoryImpl.class)));
+        registry.registerSingleton("TripService", new TripServiceImpl(infraContext.getBean(TripRepositoryImpl.class), infraContext.getBean(UserRepositoryImpl.class)));
         registry.registerSingleton("ReservationService", new ReservationServiceImpl(infraContext.getBean(ReservationRepositoryImpl.class)));
     }
 }

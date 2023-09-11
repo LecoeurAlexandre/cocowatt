@@ -42,10 +42,10 @@ public class UserController {
                     userDtoRequest.isAdmin(),
                     userDtoRequest.getImageUrl()
             );
+            return ResponseEntity.status(HttpStatus.CREATED).body("Utilisateur créé");
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body("Utilisateur créé");
     }
 
     @GetMapping("")

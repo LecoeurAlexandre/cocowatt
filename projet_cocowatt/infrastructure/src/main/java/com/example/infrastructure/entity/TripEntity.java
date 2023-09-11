@@ -29,8 +29,8 @@ public class TripEntity {
     private int availableSeats;
     @Column(name="distance", nullable=false, unique=false)
     private int distance;
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(nullable = false)
     private UserEntity user;
     @OneToMany
     @JoinColumn(name = "reservation_id", nullable = false)

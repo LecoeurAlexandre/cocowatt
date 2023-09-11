@@ -19,7 +19,7 @@ public class ReservationEntity {
     private int id;
     @ManyToOne
     @JoinColumn(nullable = false)
-    private UserEntity passenger;
+    private UserEntity user;
     @ManyToOne
     @JoinColumn(nullable = false)
     private TripEntity trip;

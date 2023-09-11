@@ -35,9 +35,8 @@ public class UserEntity {
     @Column(name="password", nullable=false, unique=false)
     private String password;
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "trip_id")
     @Nullable
-    private List<TripEntity> tripList;
+    private List<TripEntity> tripList = new ArrayList<>();
     @OneToMany(fetch = FetchType.EAGER)
     @Nullable
     private List<ReservationEntity> reservationList = new ArrayList<>();
