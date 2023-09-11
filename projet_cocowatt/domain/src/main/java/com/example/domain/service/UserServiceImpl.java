@@ -7,6 +7,7 @@ import com.example.domain.entity.User;
 import com.example.domain.exception.*;
 import com.example.domain.port.UserRepository;
 import com.example.domain.port.UserService;
+import jakarta.annotation.security.PermitAll;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -20,7 +21,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createUser(String firstName, String lastName, String phone, String email, String password, Car car, List<Trip> tripList, List<Reservation> reservationList, boolean isAdmin, String imageUrl) throws EmptyParameterException, InvalidEmailException, InvalidPhoneException, EmailAlreadyExistsException, PhoneAlreadyExistsException {
+    public void createUser(String firstName, String lastName, String phone, String email, String password, List<Trip> tripList, List<Reservation> reservationList, boolean isAdmin, String imageUrl) throws EmptyParameterException, InvalidEmailException, InvalidPhoneException, EmailAlreadyExistsException, PhoneAlreadyExistsException {
         if (firstName.isEmpty() || lastName.isEmpty() || phone.isEmpty() || email.isEmpty() || password.isEmpty()) {
             throw new EmptyParameterException();
         }
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
             }
         }
         try {
-            User user = new User(firstName, lastName, phone, email, password, car, tripList, reservationList, isAdmin, imageUrl);
+            User user = new User(firstName, lastName, phone, email, password, tripList, reservationList, isAdmin, imageUrl);
             userRepository.save(user);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -54,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(int id) throws InvalidIdException, UserNotFoundException {
+    public User findById(int id) throws InvalidIdException, EntityNotFoundException {
         if (id <= 0) {
             throw new InvalidIdException(id);
         }
@@ -62,7 +63,7 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.findById(id);
             return user;
         } catch (Exception e) {
-            throw new UserNotFoundException();
+            throw new EntityNotFoundException("Utilisateur");
         }
     }
 
@@ -76,7 +77,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(int id, User user) throws InvalidIdException, UserNotFoundException {
+    public void update(int id, User user) throws InvalidIdException, EntityNotFoundException {
         if (id <= 0) {
             throw new InvalidIdException(id);
         }
@@ -89,7 +90,6 @@ public class UserServiceImpl implements UserService {
             userToUpdate.setPassword(user.getPassword());
             userToUpdate.setPhone(user.getPhone());
             userToUpdate.setAdmin(user.isAdmin());
-            userToUpdate.setCar(user.getCar());
             userToUpdate.setReservationList(user.getReservationList());
             userToUpdate.setTripList(user.getTripList());
             userToUpdate.setImageUrl(user.getImageUrl());
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(int id) throws InvalidIdException, UserNotFoundException {
+    public void delete(int id) throws InvalidIdException, EntityNotFoundException {
         if (id <= 0) {
             throw new InvalidIdException(id);
         }
@@ -112,4 +112,15 @@ public class UserServiceImpl implements UserService {
            throw new RuntimeException(e.getMessage());
        }
     }
+
+    @Override
+    public List<User> findAllByLastName(String lastName) {
+        try {
+            return userRepository.findByLastName(lastName);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+
 }

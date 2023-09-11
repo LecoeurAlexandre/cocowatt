@@ -20,7 +20,6 @@ public class UserDtoRequest {
     private String phone;
     private String email;
     private String password;
-    private Car car;
     private List<Trip> tripList;
     private List<Reservation> reservationList;
     private boolean isAdmin;

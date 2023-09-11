@@ -5,8 +5,9 @@ import com.example.adapters.entity.UserDtoResponse;
 import com.example.domain.entity.User;
 import com.example.domain.exception.EmptyParameterException;
 import com.example.domain.exception.InvalidIdException;
-import com.example.domain.exception.UserNotFoundException;
+import com.example.domain.exception.EntityNotFoundException;
 import com.example.domain.port.UserService;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,16 +28,15 @@ public class UserController {
         this.modelMapper = modelMapper;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity post(@RequestBody UserDtoRequest userDtoRequest) throws EmptyParameterException {
+    @PostMapping("")
+    public ResponseEntity post(@Valid @RequestBody UserDtoRequest userDtoRequest) throws EmptyParameterException {
         try {
-                    userService.createUser(
+            userService.createUser(
                     userDtoRequest.getFirstName(),
                     userDtoRequest.getLastName(),
                     userDtoRequest.getPhone(),
                     userDtoRequest.getEmail(),
                     userDtoRequest.getPassword(),
-                    userDtoRequest.getCar(),
                     userDtoRequest.getTripList(),
                     userDtoRequest.getReservationList(),
                     userDtoRequest.isAdmin(),
@@ -48,7 +48,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Utilisateur créé");
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public ResponseEntity getAll() {
         List<UserDtoResponse> userDtoResponseList = new ArrayList<>();
         for (User u : userService.findAll()) {
@@ -58,8 +58,8 @@ public class UserController {
         return ResponseEntity.ok(userDtoResponseList);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity getById(@PathVariable int id) throws UserNotFoundException, InvalidIdException {
+    @GetMapping("/id/{id}")
+    public ResponseEntity getById(@PathVariable int id) throws EntityNotFoundException, InvalidIdException {
         try {
             UserDtoResponse userDtoResponse = modelMapper.map(userService.findById(id), UserDtoResponse.class);
             return ResponseEntity.ok(userDtoResponse);
@@ -68,8 +68,22 @@ public class UserController {
         }
     }
 
+    @GetMapping("/lastname/{lastName}")
+    public ResponseEntity getAllByLastName(@PathVariable String lastName) {
+        try {
+            List<UserDtoResponse> userDtoResponseList = new ArrayList<>();
+            for (User u : userService.findAllByLastName(lastName)) {
+                UserDtoResponse userDtoResponse = modelMapper.map(u, UserDtoResponse.class);
+                userDtoResponseList.add(userDtoResponse);
+            }
+            return ResponseEntity.ok(userDtoResponseList);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity update(@PathVariable int id, @RequestBody UserDtoRequest userDtoRequest) throws UserNotFoundException, InvalidIdException {
+    public ResponseEntity update(@PathVariable int id, @RequestBody UserDtoRequest userDtoRequest) throws EntityNotFoundException, InvalidIdException {
         try {
             User user = modelMapper.map(userDtoRequest, User.class);
             userService.update(id, user);
@@ -86,7 +100,6 @@ public class UserController {
             return ResponseEntity.ok("Utilisateur supprimé");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-
         }
     }
 

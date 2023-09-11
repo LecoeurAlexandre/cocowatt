@@ -2,32 +2,50 @@ package com.example.domain.service;
 
 import com.example.domain.entity.Car;
 import com.example.domain.entity.User;
+import com.example.domain.exception.EmptyParameterException;
+import com.example.domain.exception.InvalidIdException;
+import com.example.domain.exception.InvalidSeatsException;
+import com.example.domain.exception.NoUserAssignedToCarException;
 import com.example.domain.port.CarRepository;
 import com.example.domain.port.CarService;
+import com.example.domain.port.UserRepository;
 
 import java.util.List;
 
 public class CarServiceImpl implements CarService {
 
     private CarRepository carRepository;
+    private UserRepository userRepository;
 
-    public CarServiceImpl(CarRepository carRepository) {
+    public CarServiceImpl(CarRepository carRepository, UserRepository userRepository) {
         this.carRepository = carRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public void createCar(String brand, String model, int availableSeats, boolean isElectric, User user) {
-        if (brand.isEmpty() || model.isEmpty() || availableSeats <= 0 || user.equals(null)) {
-            throw new RuntimeException("Paramètre(s) invalide(s)");
+    public void createCar(String brand, String model, int availableSeats, boolean isElectric, int userId) throws EmptyParameterException, InvalidSeatsException, InvalidIdException {
+        if (brand.isEmpty() || model.isEmpty()) {
+            throw new EmptyParameterException();
         }
-        Car car = new Car(brand, model, availableSeats, isElectric, user);
-        carRepository.save(car);
+        if (availableSeats <= 0) {
+            throw new InvalidSeatsException();
+        }
+        if (userId <= 0 ) {
+            throw new InvalidIdException(userId);
+        }
+        try {
+            User user = userRepository.findById(userId);
+            Car car = new Car(brand, model, availableSeats, isElectric, user);
+            carRepository.save(car);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
-    public Car findById(int id) {
+    public Car findById(int id) throws InvalidIdException {
         if (id <= 0) {
-            throw new RuntimeException("ID invalide");
+            throw new InvalidIdException(id);
         }
         Car car = carRepository.findByID(id);
         return car;
@@ -35,31 +53,42 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public List<Car> findAll() {
-        return carRepository.findAll();
+        try {
+            return carRepository.findAll();
+        } catch (Exception e ) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
-    public void delete(int id) {
-        Car car = carRepository.findByID(id);
-        if (id <= 0 || car.equals(null)) {
-            throw new RuntimeException("Voiture introuvable");
+    public void delete(int id) throws InvalidIdException {
+        if (id <= 0) {
+            throw new InvalidIdException(id);
         }
-        carRepository.delete(car);
+        try {
+            Car car = carRepository.findByID(id);
+            carRepository.delete(car);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
-    public void update(int id, Car car) {
-        if (id <= 0 || car.equals(null)) {
-            throw new RuntimeException("Voiture introuvable");
+    public void update(int id, Car car) throws InvalidIdException {
+        if (id <= 0) {
+            throw new InvalidIdException(id);
         }
-        Car carToUpdate = carRepository.findByID(id);
 
-        carToUpdate.setBrand(car.getBrand());
-        carToUpdate.setModel(car.getModel());
-        carToUpdate.setElectric(car.isElectric());
-        carToUpdate.setAvailableSeats(car.getAvailableSeats());
-        carToUpdate.setUser(car.getUser());
+        try {
+            Car carToUpdate = carRepository.findByID(id);
+            carToUpdate.setBrand(car.getBrand());
+            carToUpdate.setModel(car.getModel());
+            carToUpdate.setElectric(car.isElectric());
+            carToUpdate.setAvailableSeats(car.getAvailableSeats());
 
-        carRepository.save(carToUpdate);
+            carRepository.save(carToUpdate);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }

@@ -20,7 +20,6 @@ public class UserDtoResponse {
     private String lastName;
     private String phone;
     private String email;
-    private Car car;
     private List<Trip> tripList;
     private List<Reservation> reservationList;
     private boolean isAdmin;

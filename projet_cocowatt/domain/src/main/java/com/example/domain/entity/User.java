@@ -9,7 +9,6 @@ public class User {
     private String phone;
     private String email;
     private String password;
-    private Car car;
     private List<Trip> tripList;
     private List<Reservation> reservationList;
     private boolean isAdmin;
@@ -28,13 +27,12 @@ public class User {
         this.imageUrl = imageUrl;
     }
 
-    public User(String firstName, String lastName, String phone, String email, String password, Car car, List<Trip> tripList, List<Reservation> reservationList, boolean isAdmin, String imageUrl) {
+    public User(String firstName, String lastName, String phone, String email, String password, List<Trip> tripList, List<Reservation> reservationList, boolean isAdmin, String imageUrl) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
         this.email = email;
         this.password = password;
-        this.car = car;
         this.tripList = tripList;
         this.reservationList = reservationList;
         this.isAdmin = isAdmin;
@@ -87,14 +85,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Car getCar() {
-        return car;
-    }
-
-    public void setCar(Car car) {
-        this.car = car;
     }
 
     public List<Trip> getTripList() {

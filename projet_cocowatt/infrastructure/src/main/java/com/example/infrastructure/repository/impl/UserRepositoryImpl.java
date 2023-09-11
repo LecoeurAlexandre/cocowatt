@@ -50,4 +50,15 @@ public class UserRepositoryImpl implements UserRepository {
         UserEntity userEntity = modelMapper.map(user, UserEntity.class);
         userEntityRepository.delete(userEntity);
     }
+
+    @Override
+    public List<User> findByLastName(String lastName) {
+        List<UserEntity> userEntityList = userEntityRepository.findAllByLastName(lastName);
+        List<User> userList = new ArrayList<>();
+        for (UserEntity u : userEntityList) {
+            User user = modelMapper.map(u, User.class);
+            userList.add(user);
+        }
+        return userList;
+    }
 }

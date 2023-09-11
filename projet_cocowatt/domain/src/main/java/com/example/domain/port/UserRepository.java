@@ -10,4 +10,5 @@ public interface UserRepository {
     User findById(int id);
     List<User> findAll();
     void delete(User user);
+    List<User> findByLastName(String lastName);
 }

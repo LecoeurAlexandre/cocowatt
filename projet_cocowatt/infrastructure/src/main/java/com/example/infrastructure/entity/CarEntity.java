@@ -16,9 +16,9 @@ public class CarEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(length=50, nullable=false, unique=false)
+    @Column(nullable=false, unique=false)
     private String brand;
-    @Column(length=50, nullable=false, unique=false)
+    @Column(nullable=false, unique=false)
     private String model;
     @Column(nullable=false, unique=false)
     @Min(value = 1, message = "Il doit y avoir au moins une place disponible")
@@ -26,6 +26,6 @@ public class CarEntity {
     @Column(nullable=false, unique=false)
     private boolean isElectric;
     @OneToOne
-    @JoinColumn(nullable = false)
-    private UserEntity driver;
+    @JoinColumn
+    private UserEntity user;
 }

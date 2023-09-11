@@ -34,9 +34,6 @@ public class UserEntity {
     private String email;
     @Column(name="password", nullable=false, unique=false)
     private String password;
-    @OneToOne
-    @JoinColumn(name = "car_id", nullable = true)
-    private CarEntity car;
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "trip_id")
     @Nullable

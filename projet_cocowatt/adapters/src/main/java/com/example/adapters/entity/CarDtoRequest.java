@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CarDtoRequest {
-    private int id;
     private String brand;
     private String model;
     private int availableSeats;
